@@ -10,7 +10,7 @@
 
 > 用 photo-color-match 记住这张参考图，后面我发的照片都按它仿色。
 
-随后发单张或一批原片即可。也可说“颜色淡一点”“加一点柔光”“换这张当样片”。样片副本与参数存到当前聊天工作区，原附件移走后仍可继续用。不同聊天各自保存样片。技能不会将私人照片同步到 GitHub。
+随后发单张或一批原片即可。新样片或新批次先提供轻 35%、中 65%、强 90% 三档预览，选好后再批量处理；已明确指定强度或要求自动选择时可直接处理。也可说“颜色淡一点”“加一点柔光”“换这张当样片”。换样片默认重置全部调色参数；想沿用时说“保留上次参数换样片”。样片副本与参数存到当前聊天工作区，原附件移走后仍可继续用。不同聊天各自保存样片。技能不会将私人照片同步到 GitHub。
 
 ## 从 GitHub 下载并安装
 
@@ -37,13 +37,17 @@ WorkBuddy 或其他本地助手也可收到仓库链接或解压文件夹，再�
 ```sh
 npm install --omit=dev
 node scripts/session.cjs reference "/photos/sample.jpg" --session "/my-work/style"
+node scripts/session.cjs preview "/photos/a.jpg" --out "/my-work/previews" --session "/my-work/style"
+node scripts/session.cjs settings --strength 0.65 --session "/my-work/style"
 node scripts/session.cjs apply "/photos/a.jpg" "/photos/b.jpg" --out "/my-work/results" --session "/my-work/style"
 node scripts/session.cjs settings --strength 0.55 --session "/my-work/style"
 ```
 
 `--session` 必须放在技能目录之外，建议工作区 `.photo-color-match/<chat-id>`，每个聊天一个目录。省略时默认为当前工作目录的 `.photo-color-match/default`；通常应显式传入。
 
-手动操作可直接打开 `index.html`，不需要 Node.js。浏览器页面不会读取脚本会话，重新打开需重新导入文件。
+`preview` 不改变当前样片或参数，每次生成独立目录，包含原片/轻/中/强比较图、三个预览 PNG 和参数清单。三档仅改变仿色强度，其他设置保持一致。选档后用 `settings --strength 0.35/0.65/0.9` 保存相应数值。换样片并保留旧参数的命令为 `reference new.jpg --keep-settings --session ...`；不加该标志则重置。
+
+手动操作可直接打开 `index.html`，不需要 Node.js。页面会显示三档预览，点击选择一档或手动调整参数后即可批量导出；换样片前可选择重置或保留参数。浏览器页面不会读取脚本会话，重新打开需重新导入文件。
 
 ## 上传 GitHub
 
@@ -59,6 +63,8 @@ node scripts/session.cjs settings --strength 0.55 --session "/my-work/style"
 
 ## 测试与许可
 
-`npm test` 覆盖样片跨多轮复用、换样片、独立会话、参数持久化、像素和透明度保护、不覆盖输出。GitHub Actions 配置了 Windows/macOS/Linux 测试；上传后实际运行结果才确认远端 CI 状态。
+v1.2.0 增加换样片参数重置/保留，以及三档预览。
+
+`npm test` 覆盖换样片默认重置、显式保留、预览不修改会话与输入、预览和正式导出参数一致，以及样片跨多轮复用、换样片、独立会话、参数持久化、像素和透明度保护、不覆盖输出。GitHub Actions 配置了 Windows/macOS/Linux 测试；上传后实际运行结果才确认远端 CI 状态。
 
 代码和文档为 MIT 许可；sharp 等依赖保留各自许可证。

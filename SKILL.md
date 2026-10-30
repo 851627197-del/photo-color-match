@@ -1,6 +1,6 @@
 ---
 name: photo-color-match
-description: 参考图仿色：先发一张样片，后续照片自动沿用该样片与调色参数，支持连续多轮、批量、柔光、颗粒和换样片。用于保留原片内容的色调统一，不用于重绘或人脸编辑。
+description: 参考图仿色：先发一张样片，后续照片自动沿用该样片与调色参数，支持三档预览、连续多轮、批量、柔光、颗粒和换样片。用于保留原片内容的色调统一，不用于重绘或人脸编辑。
 ---
 
 # 参考图仿色 · 样片记忆
@@ -12,6 +12,9 @@ description: 参考图仿色：先发一张样片，后续照片自动沿用该�
 - 用户先发“参考图/样片”时，立即将其保存为当前聊天样片并简短确认。后续上传照片沿用它处理，不重复索要样片或要求用户点网页。
 - 用户一次发多张并说明“第一张是参考图”时，仅将后面的照片列入处理。没有样片且无法区分图片角色时才询问。
 - 已有样片后，新发照片默认是待处理原片。只有“换参考图/这张当样片”等指令才替换样片。
+- 更换样片默认重置所有调色参数（包括柔光、颗粒），简短告知已重置；用户明确说“保留上次参数换样片”时才加 `--keep-settings`。明确指定的新参数始终覆盖默认值或保留值。换样片后重新预览。
+- 新样片或新批次，若用户未指定强度，先从这一批选一张有代表性的原片生成轻 35%、中 65%、强 90% 三档预览，展示 `comparison.png`（顺序：原片、轻、中、强），让用户选档后再处理整批。单张初次试色也可用此预览。用户已给明确强度或要求自动选择时直接采用；同一批后续沿用已认可参数，无需反复询问。
+- 预览只生成文件，不保存选择；用户选档后用 `settings --strength` 记住对应值，再 `apply`。三档只改变 strength，其他参数沿用当前设置；它们表示同一算法的不同强度。
 - 用户说“淡一点/更暖/加颗粒”等时调整参数，记住用户认可的设置供后续沿用。默认强度 0.7、明暗迁移 0.35，其余 0；人像先检查肤色，必要时降低强度。
 - 使用真实附件的本地文件。只有附件 ID 时，先用宿主工具落盘；不能臆造路径或仅凭文案声称已处理。
 
@@ -29,12 +32,14 @@ description: 参考图仿色：先发一张样片，后续照片自动沿用该�
 
 ```sh
 node scripts/session.cjs reference "/photos/sample.jpg" --session "/workspace/.photo-color-match/chat-id"
+node scripts/session.cjs preview "/photos/a.jpg" --out "/workspace/previews" --session "/workspace/.photo-color-match/chat-id"
+node scripts/session.cjs settings --strength 0.65 --session "/workspace/.photo-color-match/chat-id"
 node scripts/session.cjs apply "/photos/a.jpg" "/photos/b.jpg" --out "/workspace/results" --session "/workspace/.photo-color-match/chat-id"
 node scripts/session.cjs settings --strength 0.55 --glow 0.1 --session "/workspace/.photo-color-match/chat-id"
 node scripts/session.cjs status --session "/workspace/.photo-color-match/chat-id"
 ```
 
-`reference` 保存样片，`apply` 沿用样片；`settings` 修改并记住参数，`status` 查看当前状态。`apply` 也接受参数，全部处理成功后保存为会话设置。没有样片时 apply 明确报错。
+`reference` 保存样片并默认重置参数，`--keep-settings` 显式保留旧参数。`preview` 每次创建独立子目录，含三张缩略图、比较图和 `variants.json`，不修改会话或原片。预览使用与正式导出相同的原尺寸图像统计；柔光和颗粒在缩略图与大图上的细节可能不同。`apply` 沿用样片；`settings` 修改并记住参数，`status` 查看当前状态。`apply` 也接受参数，全部处理成功后保存为会话设置。没有样片时 apply 明确报错。
 
 `apply` 可传照片文件夹（只扫直接子文件）；不要把参考图包含在待处理输入中。同名输出加序号、不覆盖原片。输出按 EXIF 转正的原尺寸 sRGB PNG，保留透明度、不复制 GPS/EXIF。支持 JPG、PNG、WebP、TIFF；RAW/HEIC 先转换。
 

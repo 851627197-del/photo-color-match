@@ -1,1 +1,1 @@
-{"name":"photo-color-match","version":"1.1.0","private":true,"description":"Offline reference photo colour matching with session memory","license":"MIT","scripts":{"test":"node --test tests/*.test.cjs"},"dependencies":{"sharp":"^0.34.5"},"engines":{"node":">=20"}}
+{"name":"photo-color-match","version":"1.2.0","private":true,"description":"Offline reference photo colour matching with session memory and three-strength previews","license":"MIT","scripts":{"test":"node --test tests/*.test.cjs"},"dependencies":{"sharp":"^0.34.5"},"engines":{"node":">=20"}}

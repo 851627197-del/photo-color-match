@@ -62,6 +62,8 @@ async function apply(image,referenceStats,options={},sourceStats){
  if(p.grain){let seed=123456789;for(let i=0;i<out.length;i+=4){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;const noise=((seed>>>0)/4294967295-.5)*p.grain*36;for(let c=0;c<3;c++)out[i+c]+=noise}}
  return {data:out,width:w,height:h};
 }
-const api={lab,rgb,stats,apply,defaults,validate};
+const previewLevels=Object.freeze([{key:'light',label:'轻',strength:.35},{key:'medium',label:'中',strength:.65},{key:'strong',label:'强',strength:.9}].map(Object.freeze));
+function variants(options={}){const p=validate(options);return previewLevels.map(level=>({...level,parameters:{...p,strength:level.strength}}))}
+const api={lab,rgb,stats,apply,defaults,validate,previewLevels,variants};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ColorMatch=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -1,0 +1,9 @@
+node_modules/
+.photo-color-match/
+downloads/
+results/
+outputs/
+work/
+*.log
+.DS_Store
+Thumbs.db

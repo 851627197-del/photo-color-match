@@ -1,0 +1,4 @@
+interface:
+  display_name: "参考图仿色"
+  short_description: "从参考样片提取色调，批量调整照片，保留原片内容并导出可复用调色参数"
+  default_prompt: "使用 $photo-color-match，记住我先发的这张样片，后续照片都沿用它仿色，直到我更换参考图。"
